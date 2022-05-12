@@ -1,17 +1,19 @@
-const express = require("express");
+const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User.model");
 
-const router = express.Router();
 const saltRounds = 10;
 
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
+router.get("/", (req, res, next) => {
+  res.json("All good in here");
+});
+
 // POST  /auth/signup
-// ...
 router.post("/signup", async (req, res, next) => {
-  const { name, password } = req.body;
+  const { username, password } = req.body;
 
   // Use regex to validate the password format
   const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
@@ -24,19 +26,19 @@ router.post("/signup", async (req, res, next) => {
   }
 
   try {
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ username });
     if (existingUser) {
-      req.status(400).json({ message: "Email invalid" });
+      req.status(400).json({ message: "Username invalid" });
       return;
     }
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashedPassword = bcrypt.hashSync(password, salt);
     const createUser = await User.create({
+      username,
       password: hashedPassword,
-      name,
     });
     const newUser = {
-      email: createUser.email,
+      username: createUser.username,
       name: createUser.name,
       id: createUser._id,
     };
@@ -48,16 +50,16 @@ router.post("/signup", async (req, res, next) => {
 
 // POST  /auth/login
 router.post("/login", (req, res, next) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
-  // Check if email or password are provided as empty string
+  // Check if username or password are provided as empty string
   if (password === "") {
-    res.status(400).json({ message: "Provide email and password." });
+    res.status(400).json({ message: "Provide username and password." });
     return;
   }
 
-  // Check the users collection if a user with the same email exists
-  User.findOne({ email })
+  // Check the users collection if a user with the same username exists
+  User.findOne({ username })
     .then((foundUser) => {
       if (!foundUser) {
         // If the user is not found, send an error response
@@ -70,10 +72,10 @@ router.post("/login", (req, res, next) => {
 
       if (passwordCorrect) {
         // Deconstruct the user object to omit the password
-        const { _id, name } = foundUser;
+        const { _id, useraccount } = foundUser;
 
         // Create an object that will be set as the token payload
-        const payload = { _id, email, name };
+        const payload = { _id, useraccount };
 
         // Create and sign the token
         const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
