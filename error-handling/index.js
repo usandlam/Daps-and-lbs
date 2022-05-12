@@ -9,10 +9,14 @@ module.exports = (app) => {
     // always logs the error
     console.error("ERROR", req.method, req.path, err);
 
-    if(err && err.status === 401 && err.code === 'credentials_required' && err.inner && err.inner.message){
-      res
-      .status(err.status)
-      .json({
+    if (
+      err &&
+      err.status === 401 &&
+      err.code === "credentials_required" &&
+      err.inner &&
+      err.inner.message
+    ) {
+      res.status(err.status).json({
         errorMessage: err.inner.message,
       });
       return;
@@ -20,11 +24,9 @@ module.exports = (app) => {
 
     // only render if the error ocurred before sending the response
     if (!res.headersSent) {
-      res
-        .status(500)
-        .json({
-          errorMessage: "Internal server error. Check the server console",
-        });
+      res.status(500).json({
+        errorMessage: "Internal server error. Check the server console",
+      });
     }
   });
 };
