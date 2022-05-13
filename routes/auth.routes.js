@@ -57,7 +57,6 @@ router.post("/login", async (req, res, next) => {
       const foundUserName = findUser.username;
       const foundUserId = findUser._id;
       const payload = { foundUserName, foundUserId };
-      console.log(payload);
       const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
         algorithm: "HS256",
         expiresIn: "6h",
@@ -70,46 +69,6 @@ router.post("/login", async (req, res, next) => {
     return res.status(401).json({ message: "User not found." });
   }
 });
-/*
-// POST  /auth/login
-router.post("/login", (req, res, next) => 
-  
-  User.findOne({ username })
-    .then((foundUser) => {
-      if (!foundUser) {
-        // If the user is not found, send an error response
-        res.status(401).json({ message: "User not found." });
-        return;
-      }
-
-      // Compare the provided password with the one saved in the database
-      const passwordCorrect = bcrypt.compareSync(password, foundUser.password);
-
-      if (passwordCorrect) {
-        // Deconstruct the user object to omit the password
-        const { _id, useraccount } = foundUser;
-
-        // Create an object that will be set as the token payload
-        const payload = { _id, useraccount };
-
-        // Create and sign the token
-        const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
-          algorithm: "HS256",
-          expiresIn: "6h",
-        });
-
-        // Send the token as the response
-        res.status(200).json({ authToken });
-      } else {
-        res.status(401).json({ message: "Unable to authenticate the user" });
-      }
-    })
-    .catch((err) => {
-      res.status(500).json({ message: "Internal Server Error" });
-      console.log(err);
-    });
-});
-*/
 
 // GET  /auth/verify
 router.get("/verify", isAuthenticated, (req, res, next) => {

@@ -15,7 +15,8 @@
     "express-jwt": "^7.7.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.3.3",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "punycode": "^2.1.1"
   },
   "devDependencies": {
     "eslint": "^8.15.0",
