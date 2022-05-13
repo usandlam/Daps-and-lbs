@@ -14,11 +14,10 @@ router.get("/", (req, res, next) => {
 // POST  /auth/signup
 router.post("/signup", async (req, res, next) => {
   const { username, password } = req.body;
-
   // Use regex to validate the password format
   const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
   if (!passwordRegex.test(password)) {
-    res.status(400).json({
+    res.status(401).json({
       message:
         "Password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.",
     });
@@ -28,7 +27,7 @@ router.post("/signup", async (req, res, next) => {
   try {
     const existingUser = await User.findOne({ username });
     if (existingUser) {
-      req.status(400).json({ message: "Username invalid" });
+      res.status(401).json({ message: "Username invalid" });
       return;
     }
     const salt = bcrypt.genSaltSync(saltRounds);
@@ -39,7 +38,6 @@ router.post("/signup", async (req, res, next) => {
     });
     const newUser = {
       username: createUser.username,
-      name: createUser.name,
       id: createUser._id,
     };
     res.status(201).json({ user: newUser });
@@ -56,8 +54,10 @@ router.post("/login", async (req, res, next) => {
     const findUser = await User.findOne({ username });
     const verifyHash = bcrypt.compareSync(password, findUser.password);
     if (verifyHash) {
-      const { _id, username } = findUser;
-      const payload = { _id, username };
+      const foundUserName = findUser.username;
+      const foundUserId = findUser._id;
+      const payload = { foundUserName, foundUserId };
+      console.log(payload);
       const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
         algorithm: "HS256",
         expiresIn: "6h",
@@ -72,16 +72,8 @@ router.post("/login", async (req, res, next) => {
 });
 /*
 // POST  /auth/login
-router.post("/login", (req, res, next) => {
-  const { username, password } = req.body;
-
-  // Check if username or password are provided as empty string
-  if (password === "") {
-    res.status(400).json({ message: "Provide username and password." });
-    return;
-  }
-
-  // Check the users collection if a user with the same username exists
+router.post("/login", (req, res, next) => 
+  
   User.findOne({ username })
     .then((foundUser) => {
       if (!foundUser) {

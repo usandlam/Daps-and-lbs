@@ -9,13 +9,19 @@ module.exports = (app) => {
     // always logs the error
     console.error("ERROR", req.method, req.path, err);
 
-    if (
-      err &&
-      err.status === 401 &&
-      err.code === "credentials_required" &&
-      err.inner &&
-      err.inner.message
-    ) {
+    if (err && err.status === 401 && err.inner && err.inner.message) {
+      if (err.code === "credentials_required") {
+        res.status(err.status).json({
+          errorMessage: err.inner.message,
+        });
+      } else {
+        res.status(err.status).json({
+          errorMessage: err.inner.message,
+        });
+      }
+      return;
+    }
+    if (err && err.status > 401 && err.status <= 500) {
       res.status(err.status).json({
         errorMessage: err.inner.message,
       });
