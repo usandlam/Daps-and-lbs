@@ -48,6 +48,29 @@ router.post("/signup", async (req, res, next) => {
   }
 });
 
+router.post("/login", async (req, res, next) => {
+  const { username, password } = req.body;
+  if (password === "" || username === "")
+    return res.status(400).json({ message: "Provide username and password." });
+  try {
+    const findUser = await User.findOne({ username });
+    const verifyHash = bcrypt.compareSync(password, findUser.password);
+    if (verifyHash) {
+      const { _id, username } = findUser;
+      const payload = { _id, username };
+      const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+        algorithm: "HS256",
+        expiresIn: "6h",
+      });
+      return res.status(200).json({ authToken });
+    }
+    return res.status(401).json({ message: "Unable to authenticate the user" });
+  } catch (error) {
+    console.log(error);
+    return res.status(401).json({ message: "User not found." });
+  }
+});
+/*
 // POST  /auth/login
 router.post("/login", (req, res, next) => {
   const { username, password } = req.body;
@@ -94,10 +117,11 @@ router.post("/login", (req, res, next) => {
       console.log(err);
     });
 });
+*/
 
 // GET  /auth/verify
 router.get("/verify", isAuthenticated, (req, res, next) => {
-  // console.log(`req.payload`,req.payload);
+  console.log(`req.payload`, req.payload);
   res.status(200).json(req.payload);
 });
 

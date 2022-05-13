@@ -20,6 +20,11 @@ router.get("/daps", async (req, res, next) => {
 
 router.post("/dap", async (req, res, next) => {
   const { latitude, longitude } = req.body;
+
+  // if geolocation is denied API w/ IP?
+  // https://ip-api.com/docs
+  // 
+
   try {
     const newDap = await Dap.create({
       location: { type: "Point", coordinates: [latitude, longitude] },
