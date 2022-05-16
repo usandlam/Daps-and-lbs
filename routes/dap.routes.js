@@ -23,7 +23,8 @@ router.post("/dap", async (req, res, next) => {
 
   // if geolocation is denied API w/ IP?
   // https://ip-api.com/docs
-  // 
+
+  //
 
   try {
     const newDap = await Dap.create({

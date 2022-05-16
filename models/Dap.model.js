@@ -4,9 +4,9 @@ const { Schema, model } = mongoose;
 
 const dapSchema = new Schema(
   {
-    to: [{ type: Schema.Types.ObjectId, ref: "User", default: null }],
-    from: [{ type: Schema.Types.ObjectId, ref: "User", default: null }],
-    // ?? maybe? ip: 
+    to: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    from: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    // ?? maybe? ip:
     location: {
       type: {
         type: String,
