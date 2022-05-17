@@ -2,6 +2,8 @@ const router = require("express").Router();
 
 const Dap = require("../models/Dap.model");
 
+const { isLoggedIn } = require("../middleware/jwt.middleware");
+
 router.get("/", (req, res, next) => {
   res.json("All good in here");
 });
@@ -18,17 +20,17 @@ router.get("/daps", async (req, res, next) => {
   }
 });
 
-router.post("/dap", async (req, res, next) => {
+router.post("/dap", isLoggedIn, async (req, res, next) => {
+  let from;
+  if (req.payload) {
+    from = req.payload.foundUserId;
+  } else from = null;
   const { latitude, longitude } = req.body;
-
-  // if geolocation is denied API w/ IP?
-  // https://ip-api.com/docs
-
-  //
 
   try {
     const newDap = await Dap.create({
       location: { type: "Point", coordinates: [latitude, longitude] },
+      from,
     });
     res.status(201).json({ created: { id: newDap._id, at: newDap.createdAt } });
   } catch (error) {
