@@ -2,7 +2,7 @@ const router = require("express").Router();
 
 const Dap = require("../models/Dap.model");
 
-const { isLoggedIn } = require("../middleware/jwt.middleware");
+const { isAuthenticated, isLoggedIn } = require("../middleware/jwt.middleware");
 
 router.get("/", (req, res, next) => {
   res.json("All good in here");
@@ -11,6 +11,21 @@ router.get("/", (req, res, next) => {
 router.get("/daps", async (req, res, next) => {
   try {
     const allDaps = await Dap.find();
+    res.json(allDaps);
+  } catch (error) {
+    // for dev:
+    console.log(error);
+    //
+    res.status(400).json({ error });
+  }
+});
+
+router.get("/daps/mine", isAuthenticated, async (req, res, next) => {
+  const authUser = req.payload.foundUserId;
+
+  const query = { to: authUser };
+  try {
+    const allDaps = await Dap.find({ query });
     res.json(allDaps);
   } catch (error) {
     // for dev:
