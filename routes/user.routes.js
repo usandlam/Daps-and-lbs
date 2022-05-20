@@ -22,6 +22,20 @@ router.get("/", (req, res, next) => {
   res.json("All good in here");
 });
 
+router.get("/find/:user", async (req, res, next) => {
+  const { user } = req.params;
+
+  const query = { _id: { $eq: user } };
+
+  try {
+    const lookupUser = await User.findOne(query);
+
+    res.status(200).json({ message: lookupUser.username });
+  } catch (error) {
+    res.status(404).json("All good in here");
+  }
+});
+
 router.get("/:tag", async (req, res, next) => {
   const { tag } = req.params;
   const query = { url: { $eq: cleanEmoji(tag) } };
