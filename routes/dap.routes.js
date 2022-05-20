@@ -26,6 +26,14 @@ router.get("/daps/mine", isAuthenticated, async (req, res, next) => {
   const query = { to: authUser };
   try {
     const allDaps = await Dap.find({ query });
+
+    const apiReply = {
+      dapId: allDaps._id,
+      //   dapLat: allDaps.location.coordinates,
+      //   dapLon: allDaps.location.coordinates[1],
+    };
+    console.log(apiReply);
+
     res.json(allDaps);
   } catch (error) {
     // for dev:
