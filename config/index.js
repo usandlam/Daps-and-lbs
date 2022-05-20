@@ -27,6 +27,16 @@ module.exports = (app) => {
         "http://localhost:3000",
         "http://g.localhost:3000",
         "http://127.0.0.1:3000",
+        "http://127.0.0.1:80",
+        "http://localhost:80",
+        "http://g.localhost:80",
+        "https://localhost:443",
+        "https://g.localhost:443",
+        "http://172.105.159.119:80",
+        "https://172.105.159.119:443",
+        "https://www.daps.to",
+        "https://www.daps.to:443",
+        "https://daps.to",
       ],
     })
   );

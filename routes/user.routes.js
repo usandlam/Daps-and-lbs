@@ -76,6 +76,20 @@ router.post("/tagline", isAuthenticated, async (req, res, next) => {
   }
 });
 
+router.get("/my/info", isAuthenticated, async (req, res, next) => {
+  const user = req.payload.foundUserId;
+  const query = { _id: user };
+  try {
+    const findTagline = await User.findOne(query);
+    console.log(findTagline);
+    res
+      .status(200)
+      .json({ tagLine: findTagline.tagline, url: findTagline.url });
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
 router.post("/tag", isAuthenticated, async (req, res, next) => {
   const user = req.payload.foundUserId;
   const { tag, owner } = req.body;
